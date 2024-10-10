@@ -13,11 +13,8 @@ public class Lesson6 {
     persArray[3] = new Person("Maksim Maksimov", "Tester", "mamaksimpetr@mailbox.com", "89998889012", 35000, 25);
     persArray[4] = new Person("Dmitrii Dmitriev", "Tester", "dmidmitr@mailbox.com", "89223229807", 30000, 20);
 
-    Park attraction1 = new Park();
-    attraction1.name = "carusel";
-    attraction1.price = 300;
-    Park.WorkingHours workingHoursAttraction1 = new Park.WorkingHours();
-    workingHoursAttraction1.HoursWeekday = "12:00 - 22:00";
-    workingHoursAttraction1.Hoursweekend = "10:00 - 23:00";
+
+    Park park1 = new Park("Dream Island", "Andropov Ave., 1, Moscow", "12:00 - 22:00", "10:00 - 23:00");
+    Park.Attraction attraction1 = new Park.Attraction("carousel", 300);
   }
 }
