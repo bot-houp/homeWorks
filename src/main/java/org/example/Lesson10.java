@@ -9,23 +9,17 @@ public class Lesson10 {
      * Задание 1
      */
 
-    final int maxRunDistanceCat = 200;
-    final int maxSwimDistanceCat = 0;
+    Cat cat1 = new Cat("Барсик", 30);
+    cat1.run(100, cat1.maxRunDistance);
+    cat1.swim(1, cat1.maxSwimDistance);
 
-    final int maxRunDistanceDog = 500;
-    final int maxSwimDistanceDog = 10;
-
-    Cat cat1 = new Cat("Барсик");
-    cat1.run(100, maxRunDistanceCat);
-    cat1.swim(1, maxSwimDistanceCat);
-
-    Cat cat2 = new Cat("Пушистик");
-    cat2.run(201, maxRunDistanceCat);
-    cat2.swim(0, maxSwimDistanceCat);
+    Cat cat2 = new Cat("Пушистик", 50);
+    cat2.run(300, cat2.maxRunDistance);
+    cat2.swim(0, cat2.maxSwimDistance);
 
     Dog dog = new Dog("Бобик");
-    dog.run(400, maxRunDistanceDog);
-    dog.swim(5, maxSwimDistanceDog);
+    dog.run(400, dog.maxRunDistance);
+    dog.swim(5, dog.maxSwimDistance);
 
     System.out.printf("Количество созданных котов: %d.\n", Cat.getCatCounter());
     System.out.printf("Количество созданных собак: %d.\n", Dog.getDogCounter());
@@ -34,19 +28,12 @@ public class Lesson10 {
     Cat[] catsArray = new Cat[3];
     catsArray[0] = cat1;
     catsArray[1] = cat2;
-    catsArray[2] = new Cat("Рудик");
+    catsArray[2] = new Cat("Рудик", 40);
 
-    Bowl bowl = new Bowl(30);
+    Bowl bowl = new Bowl(80);
     bowl.increaseFeed(30);
     for (Cat cat : catsArray) {
-      if (bowl.feed - cat.capacity >= 0) {
-        cat.isSatiety = cat.setSatiety();
-        bowl.feed -= cat.capacity;
-        System.out.printf("%s наелся.\n", cat.name);
-      } else {
-        System.out.println("Остальным не хватило еды в миске");
-        break;
-      }
+      cat.eat(bowl);
     }
 
     for (Cat cat : catsArray) {

@@ -2,12 +2,10 @@ package org.example;
 
 public class Animal {
   String name;
-  int capacity;
   static int animalCounter = 0;
 
   public Animal(String name) {
     this.name = name;
-    this.capacity = 30;
     animalCounter++;
   }
 

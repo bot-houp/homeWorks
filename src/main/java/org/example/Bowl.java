@@ -7,8 +7,11 @@ public class Bowl {
     this.feed = feed;
   }
 
-  public int increaseFeed(int someFeed) {
+  public void increaseFeed(int someFeed) {
     feed += someFeed;
-    return feed;
+  }
+
+  public void decreaseFeed(int someFeed) {
+    feed -= someFeed;
   }
 }
