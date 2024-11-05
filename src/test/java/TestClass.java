@@ -17,12 +17,12 @@ public class TestClass {
   }
 
   @Test
-  @DisplayName("Вычисление значения факторила числа.")
+  @DisplayName("Вычисление значения факториала числа.")
   void testFactorialCalculations() {
     assertAll("Factorial calculations",
-        () -> assertEquals(1, Main.calculateFactorial(0), "Факторил 0 равен 1."),
-        () -> assertEquals(1, Main.calculateFactorial(1), "Факторил 1 равен 1."),
-        () -> assertEquals(120, Main.calculateFactorial(5), "Факторил 1 равен 120.")
+        () -> assertEquals(1, Main.calculateFactorial(0), "Факториал 0 равен 1."),
+        () -> assertEquals(1, Main.calculateFactorial(1), "Факториал 1 равен 1."),
+        () -> assertEquals(120, Main.calculateFactorial(5), "Факториал 1 равен 120.")
     );
   }
 }
