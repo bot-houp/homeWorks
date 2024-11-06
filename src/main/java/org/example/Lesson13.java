@@ -20,6 +20,7 @@ public class Lesson13 {
     phoneBook.addContact("Петров", "+79123456788");
     phoneBook.addContact("Максимов", "+79123456787");
     phoneBook.addContact("Иванов", "+79123456786");
+    phoneBook.getContact("Шольц");
     phoneBook.getContact("Иванов");
   }
 
@@ -60,10 +61,16 @@ class PhoneBook {
   }
 
   public void getContact (String surname) {
+    System.out.printf("%s: ", surname);
+    boolean found = false;
     for (Map.Entry<String, String> o : phoneBookMap.entrySet()) {
       if (o.getValue() == surname) {
-        System.out.printf("%s :%s\n", o.getValue(), o.getKey());
+        System.out.printf("%s ", o.getKey());
+        found = true;
       }
+    }
+    if (!found) {
+      System.out.println("контакта с такой фамилией нет в телефонном справочнике.");
     }
   }
 }
