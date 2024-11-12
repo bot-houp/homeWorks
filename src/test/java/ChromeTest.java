@@ -1,8 +1,15 @@
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.Duration;
 import java.util.List;
+import org.example.Main;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -33,8 +40,8 @@ class ChromeTest {
     }
   }
 
-  @BeforeAll
-  static void setupClass() {
+  @BeforeEach
+  void setupClass() {
     WebDriverManager.chromedriver().setup();
 
     ChromeOptions options = new ChromeOptions();
@@ -45,8 +52,8 @@ class ChromeTest {
     ChromeTest.acceptCookie();
   }
 
- // @AfterAll
-  static void teardown() {
+ @AfterEach
+ void teardown() {
     driver.quit();
   }
 
@@ -54,18 +61,23 @@ class ChromeTest {
   @DisplayName("Проверка названия блока")
   void checkPayFormName() {
     WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-    WebElement h2Element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='pay__wrapper']/h2")));
-    Assertions.assertEquals(h2Element.getText(), "Онлайн пополнение\nбез комиссии", "Текст не совпал.");
+    WebElement onlineReplenishment = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='pay__wrapper']/h2")));
+    Assertions.assertEquals(onlineReplenishment.getText(), "Онлайн пополнение\nбез комиссии", "Текст не совпал.");
   }
 
   @Test
   @DisplayName("Наличие логотипов платёжных систем")
   void checkPresencePaymentLogo() {
     List<WebElement> logos = driver.findElements(By.xpath("//img[contains(@src, '/local/templates/new_design/assets/html/images/pages/index/pay/')]"));
-    Assertions.assertEquals(5, logos.size(), "Логотипы платёжных систем не найдены по локатору.");
-    for (WebElement logo : logos) {
-      Assertions.assertTrue(logo.isDisplayed(), "Один из логотипов платёжных систем не отображается.");
-      }
+    Assertions.assertEquals(5, logos.size(), "Логотип(ы) платёжных систем не найден(ы) по локатору.");
+
+    assertAll("Наличие логотипов",
+          () -> assertTrue(logos.get(0).isDisplayed(), "Логотип платёжной системы Visa не оторбразился."),
+          () -> assertTrue(logos.get(1).isDisplayed(), "Логотип сервиса безопасности от Visa не оторбразился."),
+          () -> assertTrue(logos.get(2).isDisplayed(), "Логотип платёжной системы Mastercard не оторбразился."),
+          () -> assertTrue(logos.get(3).isDisplayed(), "Логотип сервиса безопасности от Mastercard не оторбразился."),
+          () -> assertTrue(logos.get(3).isDisplayed(), "Логотип платёжной системы Белкарт не оторбразился.")
+      );
     }
 
   @Test
@@ -92,6 +104,9 @@ class ChromeTest {
     email.sendKeys("ivan@gmail.com");
 
     WebElement continueButton = driver.findElement(By.cssSelector("button.button__default[type='submit']"));
-    Assertions.assertTrue(continueButton.isEnabled(), "Ссылка «Подробнее о сервисе» некликабельна");
+    continueButton.click();
+
+    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+    Assertions.assertTrue(wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("bepaid-app"))).isEnabled(), "Платёжный шлюз не появился.");
   }
 }
