@@ -2,43 +2,29 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.Duration;
+
 import java.util.List;
-import org.example.Main;
-import org.junit.jupiter.api.AfterAll;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import pages.CardDetailsForm;
+import pages.MainPage;
 
 class ChromeTest {
 
   static WebDriver driver;
-
-  public static void acceptCookie() {
-    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-
-    try {
-      wait.until(ExpectedConditions.elementToBeClickable(By.id("cookie-agree")));
-      WebElement cookieButton = driver.findElement(By.id("cookie-agree"));
-      cookieButton.click();
-    } catch (TimeoutException e) {
-      System.out.println("Окно с куки не появилось");
-    }
-  }
+  MainPage mainPage;
+  CardDetailsForm cardDetailsForm;
 
   @BeforeEach
   void setupClass() {
@@ -49,7 +35,10 @@ class ChromeTest {
     driver = new ChromeDriver(options);
     driver.get("https://www.mts.by/");
 
-    ChromeTest.acceptCookie();
+    mainPage = new MainPage(driver);
+    mainPage.acceptCookie();
+
+    cardDetailsForm = new CardDetailsForm(driver);
   }
 
  @AfterEach
@@ -60,53 +49,155 @@ class ChromeTest {
   @Test
   @DisplayName("Проверка названия блока")
   void checkPayFormName() {
-    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-    WebElement onlineReplenishment = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='pay__wrapper']/h2")));
-    Assertions.assertEquals(onlineReplenishment.getText(), "Онлайн пополнение\nбез комиссии", "Текст не совпал.");
+    WebElement payForm = mainPage.waitAndGetElement(mainPage.onlineReplenishment);
+    Assertions.assertEquals(payForm.getText(), "Онлайн пополнение\nбез комиссии", "Текст не совпал.");
   }
 
   @Test
-  @DisplayName("Наличие логотипов платёжных систем")
+  @DisplayName("Наличие логотипов платёжных систем (главная страница)")
   void checkPresencePaymentLogo() {
-    List<WebElement> logos = driver.findElements(By.xpath("//img[contains(@src, '/local/templates/new_design/assets/html/images/pages/index/pay/')]"));
-    Assertions.assertEquals(5, logos.size(), "Логотип(ы) платёжных систем не найден(ы) по локатору.");
+    List<WebElement> logosMain = driver.findElements(mainPage.logos);
+    Assertions.assertEquals(5, logosMain.size(),
+        "Логотип(ы) платёжных систем не найден(ы) по локатору.");
 
     assertAll("Наличие логотипов",
-          () -> assertTrue(logos.get(0).isDisplayed(), "Логотип платёжной системы Visa не оторбразился."),
-          () -> assertTrue(logos.get(1).isDisplayed(), "Логотип сервиса безопасности от Visa не оторбразился."),
-          () -> assertTrue(logos.get(2).isDisplayed(), "Логотип платёжной системы Mastercard не оторбразился."),
-          () -> assertTrue(logos.get(3).isDisplayed(), "Логотип сервиса безопасности от Mastercard не оторбразился."),
-          () -> assertTrue(logos.get(3).isDisplayed(), "Логотип платёжной системы Белкарт не оторбразился.")
-      );
+        () -> assertTrue(logosMain.get(0).isDisplayed(),
+            "Логотип платёжной системы Visa не отобразился."),
+        () -> assertTrue(logosMain.get(1).isDisplayed(),
+            "Логотип сервиса безопасности Visa не отобразился."),
+        () -> assertTrue(logosMain.get(2).isDisplayed(),
+            "Логотип платёжной системы Mastercard не отобразился."),
+        () -> assertTrue(logosMain.get(3).isDisplayed(),
+            "Логотип сервиса безопасности от Mastercard не отобразился."),
+        () -> assertTrue(logosMain.get(3).isDisplayed(),
+            "Логотип платёжной системы Белкарт не отобразился.")
+    );
+
+    for (WebElement logo : logosMain) {
+      System.out.println(logo.getAttribute("alt"));
     }
+  }
 
   @Test
   @DisplayName("Проверка работы ссылки «Подробнее о сервисе»")
   void clickMoreInfoLink() {
-    WebElement moreInfoLink = driver.findElement(By.linkText("Подробнее о сервисе"));
-    moreInfoLink.click();
+    mainPage.getAndClickElement(mainPage.moreInfoLink);
     Assertions.assertEquals("https://www.mts.by/help/poryadok-oplaty-i-bezopasnost-internet-platezhey/", driver.getCurrentUrl(), "Ссылка «Подробнее о сервисе» не работает");
+  }
+
+  @Test
+  @DisplayName("Проверка плейсхолдеров в форме «Онлайн пополнение» (вид оплаты - услуги связи)")
+  void checkPlaceholdersCommunicationServices() {
+    assertAll("",
+        () -> assertEquals("Номер телефона", mainPage.findAngGetAttribute(mainPage.phoneNumber, "placeholder"), "Текст плейсхолдера не совпадает с «Номер телефона»."),
+        () -> assertEquals("Сумма", mainPage.findAngGetAttribute(mainPage.connectionSumTotal, "placeholder"), "Текст плейсхолдера не совпадает с «Сумма»."),
+        () -> assertEquals("E-mail для отправки чека", mainPage.findAngGetAttribute(mainPage.connectionEmail, "placeholder"), "Текст плейсхолдера не совпадает с «E-mail для отправки чека».")
+    );
+  }
+
+  @Test
+  @DisplayName("Проверка плейсхолдеров в форме «Онлайн пополнение» (вид оплаты - домашний интернет)")
+  void checkPlaceholdersHomeInternet() {
+    mainPage.getAndClickElement(mainPage.listPaymentType);
+    mainPage.getAndClickElement(mainPage.homeInternet);
+
+    assertAll("",
+        () -> assertEquals("Номер абонента", mainPage.findAngGetAttribute(mainPage.subscriberNumber, "placeholder"), "Текст плейсхолдера не совпадает с «Номер абонента»."),
+        () -> assertEquals("Сумма", mainPage.findAngGetAttribute(mainPage.internetSumTotal, "placeholder"), "Текст плейсхолдера не совпадает с «Сумма»."),
+        () -> assertEquals("E-mail для отправки чека", mainPage.findAngGetAttribute(mainPage.internetEmail, "placeholder"), "Текст плейсхолдера не совпадает с «E-mail для отправки чека».")
+    );
+  }
+
+  @Test
+  @DisplayName("Проверка плейсхолдеров в форме «Онлайн пополнение» (вид оплаты - рассрочка)")
+  void checkPlaceholdersInstallmentPlan() {
+    mainPage.getAndClickElement(mainPage.listPaymentType);
+    mainPage.getAndClickElement(mainPage.installmentPlan);
+
+    assertAll("",
+        () -> assertEquals("Номер счета на 44", mainPage.findAngGetAttribute(mainPage.accountInstallment, "placeholder"), "Текст плейсхолдера не совпадает с «Номер счета на 44»."),
+        () -> assertEquals("Сумма", mainPage.findAngGetAttribute(mainPage.instalmentSumTotal, "placeholder"), "Текст плейсхолдера не совпадает с «Сумма»."),
+        () -> assertEquals("E-mail для отправки чека", mainPage.findAngGetAttribute(mainPage.instalmentEmail, "placeholder"), "Текст плейсхолдера не совпадает с «E-mail для отправки чека».")
+    );
+  }
+
+  @Test
+  @DisplayName("Проверка плейсхолдеров в форме «Онлайн пополнение» (вид оплаты - задолженность)")
+  void checkPlaceholdersDebt() {
+    mainPage.getAndClickElement(mainPage.listPaymentType);
+    mainPage.getAndClickElement(mainPage.debt);
+
+    assertAll("",
+        () -> assertEquals("Номер счета на 2073", mainPage.findAngGetAttribute(mainPage.accountDebt, "placeholder"), "Текст плейсхолдера не совпадает с «Номер счета на 2073»."),
+        () -> assertEquals("Сумма", mainPage.findAngGetAttribute(mainPage.debtSumTotal, "placeholder"), "Текст плейсхолдера не совпадает с «Сумма»."),
+        () -> assertEquals("E-mail для отправки чека", mainPage.findAngGetAttribute(mainPage.debtEmail, "placeholder"), "Текст плейсхолдера не совпадает с «E-mail для отправки чека».")
+    );
   }
 
   @Test
   @DisplayName("Заполнение формы и проверка работы кнопки «Продолжить»")
   void testFormSubmission() {
-    WebElement phoneNumber = driver.findElement(By.id("connection-phone"));
-    phoneNumber.click();
-    phoneNumber.sendKeys("297777777");
+    Assertions.assertTrue(mainPage.fillUpPayForm("297777777", "100", "ivan@gmail.com").isEnabled(), "Платёжный шлюз не появился.");
+  }
 
-    WebElement sumTotal = driver.findElement(By.id("connection-sum"));
-    sumTotal.click();
-    sumTotal.sendKeys("100");
+  @Test
+  @DisplayName("Корректность отображения суммы на форме с данными карты (хэдер)")
+  void checkCorrectnessSumTotalHeader() {
+    String sumTotalExpected = "101.5";
+    driver.switchTo().frame(mainPage.fillUpPayForm("297777777", sumTotalExpected, "ivan@gmail.com"));
+    String sumTotalActual = cardDetailsForm.waitAngGetText(cardDetailsForm.sumTotal);
+    assertEquals(Float.parseFloat(sumTotalExpected), Float.parseFloat(sumTotalActual.replaceAll("[^\\d.]", "")), "Введённая сумма не совпадает с отображаемой на форме");
+  }
 
-    WebElement email = driver.findElement(By.id("connection-email"));
-    email.click();
-    email.sendKeys("ivan@gmail.com");
+  @Test
+  @DisplayName("Корректность отображения суммы на форме с данными карты (кнопка)")
+  void checkCorrectnessSumTotalButton() {
+    String sumTotalExpected = "101.5";
+    driver.switchTo().frame(mainPage.fillUpPayForm("297777777", sumTotalExpected, "ivan@gmail.com"));
+    String sumTotalActual = cardDetailsForm.waitAngGetText(cardDetailsForm.payButton);
+    assertEquals(Float.parseFloat(sumTotalExpected), Float.parseFloat(sumTotalActual.replaceAll("[^\\d.]", "")), "Введённая сумма не совпадает с отображаемой на кнопке");
+  }
 
-    WebElement continueButton = driver.findElement(By.cssSelector("button.button__default[type='submit']"));
-    continueButton.click();
+  @Test
+  @DisplayName("Корректность отображения номера телефона на форме с данными карты")
+  void checkCorrectnessPhoneNumber() {
+    String phoneNumberExpected = "297777777";
+    driver.switchTo().frame(mainPage.fillUpPayForm(phoneNumberExpected, "123.4","ivan@gmail.com"));
+    String phoneNumberActual = cardDetailsForm.waitAngGetText(cardDetailsForm.payDescription);
+    assertEquals("Оплата: Услуги связи Номер:375" + phoneNumberExpected, phoneNumberActual, "Введённый номер телефона не совпадает с отображаемым на форме");
+  }
 
-    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-    Assertions.assertTrue(wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("bepaid-app"))).isEnabled(), "Платёжный шлюз не появился.");
+  @Test
+  @DisplayName("Проверка плейсхолдеров в форме c данными карты")
+  void checkPlaceholdersCardDetailsForm() {
+    driver.switchTo().frame(mainPage.fillUpPayForm("297777777", "123.4","ivan@gmail.com"));
+
+    assertAll("",
+        () -> assertEquals("Номер карты", cardDetailsForm.waitAngGetText(cardDetailsForm.cardNumber), "Текст плейсхолдера не совпадает с «Номер карты»."),
+        () -> assertEquals("Срок действия", cardDetailsForm.waitAngGetText(cardDetailsForm.validityPeriod), "Текст плейсхолдера не совпадает с «Срок действия»."),
+        () -> assertEquals("CVC", cardDetailsForm.waitAngGetText(cardDetailsForm.fieldCvc), "Текст плейсхолдера не совпадает с «CVC»."),
+        () -> assertEquals("Имя держателя (как на карте)", cardDetailsForm.waitAngGetText(cardDetailsForm.holderName), "Текст плейсхолдера не совпадает с «Имя держателя (как на карте)».")
+    );
+  }
+
+  @Test
+  @DisplayName("Наличие логотипов платёжных систем (форма с данными карты)")
+  void checkPresenceCardDetailsLogo() {
+    driver.switchTo().frame(mainPage.fillUpPayForm("297777777", "123.4","ivan@gmail.com"));
+
+    List<WebElement> logosCardDetails = cardDetailsForm.waitAndGetElements(cardDetailsForm.fieldCardNumber, cardDetailsForm.smallLogos);
+    Assertions.assertEquals(5, logosCardDetails.size(), "Логотип(ы) платёжных систем не найден(ы) по локатору.");
+
+    assertAll("Наличие логотипов",
+        () -> assertTrue(logosCardDetails.get(0).isDisplayed(), "Логотип платёжной системы Visa не отобразился."),
+        () -> assertTrue(logosCardDetails.get(1).isDisplayed(), "Логотип платёжной системы Mastercard не отобразился."),
+        () -> assertTrue(logosCardDetails.get(2).isDisplayed(), "Логотип платёжной системы Белкарт не отобразился."),
+        () -> assertTrue(logosCardDetails.get(3).isDisplayed(), "Логотип платёжной системы Maestro не отобразился.."),
+        () -> assertTrue(logosCardDetails.get(3).isDisplayed(), "Логотип платёжной системы Мир не отобразился.")
+    );
+
+    for (WebElement logo : logosCardDetails) {
+      System.out.println(logo.getAttribute("src"));;
+    }
   }
 }
