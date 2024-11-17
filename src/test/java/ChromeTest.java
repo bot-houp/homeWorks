@@ -62,20 +62,16 @@ class ChromeTest {
 
     assertAll("Наличие логотипов",
         () -> assertTrue(logosMain.get(0).isDisplayed(),
-            "Логотип платёжной системы Visa не отобразился."),
+            "Не отобразился логотип" + logosMain.get(0).getAttribute("alt")),
         () -> assertTrue(logosMain.get(1).isDisplayed(),
-            "Логотип сервиса безопасности Visa не отобразился."),
+            "Не отобразился логотип" + logosMain.get(1).getAttribute("alt")),
         () -> assertTrue(logosMain.get(2).isDisplayed(),
-            "Логотип платёжной системы Mastercard не отобразился."),
+            "Не отобразился логотип" + logosMain.get(2).getAttribute("alt")),
         () -> assertTrue(logosMain.get(3).isDisplayed(),
-            "Логотип сервиса безопасности от Mastercard не отобразился."),
+            "Не отобразился логотип" + logosMain.get(3).getAttribute("alt")),
         () -> assertTrue(logosMain.get(3).isDisplayed(),
-            "Логотип платёжной системы Белкарт не отобразился.")
+            "Не отобразился логотип" + logosMain.get(4).getAttribute("alt"))
     );
-
-    for (WebElement logo : logosMain) {
-      System.out.println(logo.getAttribute("alt"));
-    }
   }
 
   @Test
@@ -189,15 +185,11 @@ class ChromeTest {
     Assertions.assertEquals(5, logosCardDetails.size(), "Логотип(ы) платёжных систем не найден(ы) по локатору.");
 
     assertAll("Наличие логотипов",
-        () -> assertTrue(logosCardDetails.get(0).isDisplayed(), "Логотип платёжной системы Visa не отобразился."),
-        () -> assertTrue(logosCardDetails.get(1).isDisplayed(), "Логотип платёжной системы Mastercard не отобразился."),
-        () -> assertTrue(logosCardDetails.get(2).isDisplayed(), "Логотип платёжной системы Белкарт не отобразился."),
-        () -> assertTrue(logosCardDetails.get(3).isDisplayed(), "Логотип платёжной системы Maestro не отобразился.."),
-        () -> assertTrue(logosCardDetails.get(3).isDisplayed(), "Логотип платёжной системы Мир не отобразился.")
+        () -> assertTrue(logosCardDetails.get(0).isDisplayed(), "Не отобразилась иконка" + logosCardDetails.get(0).getAttribute("src")),
+        () -> assertTrue(logosCardDetails.get(1).isDisplayed(), "Не отобразилась иконка" + logosCardDetails.get(1).getAttribute("src")),
+        () -> assertTrue(logosCardDetails.get(2).isDisplayed(), "Не отобразилась иконка" + logosCardDetails.get(2).getAttribute("src")),
+        () -> assertTrue(logosCardDetails.get(3).isDisplayed(), "Не отобразилась иконка" + logosCardDetails.get(3).getAttribute("src")),
+        () -> assertTrue(logosCardDetails.get(3).isDisplayed(), "Не отобразилась иконка" + logosCardDetails.get(4).getAttribute("src"))
     );
-
-    for (WebElement logo : logosCardDetails) {
-      System.out.println(logo.getAttribute("src"));;
-    }
   }
 }
