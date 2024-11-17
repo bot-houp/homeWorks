@@ -1,14 +1,10 @@
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Duration;
 import java.util.List;
-import org.example.Main;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -72,13 +68,18 @@ class ChromeTest {
     Assertions.assertEquals(5, logos.size(), "Логотип(ы) платёжных систем не найден(ы) по локатору.");
 
     assertAll("Наличие логотипов",
-          () -> assertTrue(logos.get(0).isDisplayed(), "Логотип платёжной системы Visa не оторбразился."),
-          () -> assertTrue(logos.get(1).isDisplayed(), "Логотип сервиса безопасности от Visa не оторбразился."),
-          () -> assertTrue(logos.get(2).isDisplayed(), "Логотип платёжной системы Mastercard не оторбразился."),
-          () -> assertTrue(logos.get(3).isDisplayed(), "Логотип сервиса безопасности от Mastercard не оторбразился."),
-          () -> assertTrue(logos.get(3).isDisplayed(), "Логотип платёжной системы Белкарт не оторбразился.")
-      );
-    }
+        () -> assertTrue(logos.get(0).isDisplayed(),
+            "Не отобразился логотип" + logos.get(0).getAttribute("alt")),
+        () -> assertTrue(logos.get(1).isDisplayed(),
+            "Не отобразился логотип" + logos.get(1).getAttribute("alt")),
+        () -> assertTrue(logos.get(2).isDisplayed(),
+            "Не отобразился логотип" + logos.get(2).getAttribute("alt")),
+        () -> assertTrue(logos.get(3).isDisplayed(),
+            "Не отобразился логотип" + logos.get(3).getAttribute("alt")),
+        () -> assertTrue(logos.get(3).isDisplayed(),
+            "Не отобразился логотип" + logos.get(4).getAttribute("alt"))
+    );
+  }
 
   @Test
   @DisplayName("Проверка работы ссылки «Подробнее о сервисе»")
