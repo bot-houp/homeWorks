@@ -1,8 +1,12 @@
+import static io.qameta.allure.SeverityLevel.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
+import io.qameta.allure.Epic;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Severity;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -48,6 +52,9 @@ class ChromeTest {
 
   @Test
   @DisplayName("Проверка названия блока")
+  @Epic("Онлайн пополнение")
+  @Issue("ONREPL-11")
+  @Severity(MINOR)
   void checkPayFormName() {
     WebElement payForm = mainPage.waitAndGetElement(mainPage.onlineReplenishment);
     Assertions.assertEquals(payForm.getText(), "Онлайн пополнение\nбез комиссии", "Текст не совпал.");
@@ -55,6 +62,9 @@ class ChromeTest {
 
   @Test
   @DisplayName("Наличие логотипов платёжных систем (главная страница)")
+  @Severity(TRIVIAL)
+  @Epic("Онлайн пополнение")
+  @Issue("ONREPL-12")
   void checkPresencePaymentLogo() {
     List<WebElement> logosMain = driver.findElements(mainPage.logos);
     Assertions.assertEquals(5, logosMain.size(),
@@ -76,6 +86,9 @@ class ChromeTest {
 
   @Test
   @DisplayName("Проверка работы ссылки «Подробнее о сервисе»")
+  @Epic("Онлайн пополнение")
+  @Issue("ONREPL-13")
+  @Severity(MINOR)
   void clickMoreInfoLink() {
     mainPage.getAndClickElement(mainPage.moreInfoLink);
     Assertions.assertEquals("https://www.mts.by/help/poryadok-oplaty-i-bezopasnost-internet-platezhey/", driver.getCurrentUrl(), "Ссылка «Подробнее о сервисе» не работает");
@@ -83,6 +96,9 @@ class ChromeTest {
 
   @Test
   @DisplayName("Проверка плейсхолдеров в форме «Онлайн пополнение» (вид оплаты - услуги связи)")
+  @Epic("Онлайн пополнение")
+  @Issue("ONREPL-14")
+  @Severity(MINOR)
   void checkPlaceholdersCommunicationServices() {
     assertAll("",
         () -> assertEquals("Номер телефона", mainPage.findAngGetAttribute(mainPage.phoneNumber, "placeholder"), "Текст плейсхолдера не совпадает с «Номер телефона»."),
@@ -93,6 +109,9 @@ class ChromeTest {
 
   @Test
   @DisplayName("Проверка плейсхолдеров в форме «Онлайн пополнение» (вид оплаты - домашний интернет)")
+  @Epic("Онлайн пополнение")
+  @Issue("ONREPL-15")
+  @Severity(MINOR)
   void checkPlaceholdersHomeInternet() {
     mainPage.getAndClickElement(mainPage.listPaymentType);
     mainPage.getAndClickElement(mainPage.homeInternet);
@@ -106,6 +125,9 @@ class ChromeTest {
 
   @Test
   @DisplayName("Проверка плейсхолдеров в форме «Онлайн пополнение» (вид оплаты - рассрочка)")
+  @Epic("Онлайн пополнение")
+  @Issue("ONREPL-16")
+  @Severity(MINOR)
   void checkPlaceholdersInstallmentPlan() {
     mainPage.getAndClickElement(mainPage.listPaymentType);
     mainPage.getAndClickElement(mainPage.installmentPlan);
@@ -119,6 +141,9 @@ class ChromeTest {
 
   @Test
   @DisplayName("Проверка плейсхолдеров в форме «Онлайн пополнение» (вид оплаты - задолженность)")
+  @Epic("Онлайн пополнение")
+  @Issue("ONREPL-17")
+  @Severity(MINOR)
   void checkPlaceholdersDebt() {
     mainPage.getAndClickElement(mainPage.listPaymentType);
     mainPage.getAndClickElement(mainPage.debt);
@@ -132,12 +157,18 @@ class ChromeTest {
 
   @Test
   @DisplayName("Заполнение формы и проверка работы кнопки «Продолжить»")
+  @Epic("Онлайн пополнение")
+  @Issue("ONREPL-18")
+  @Severity(BLOCKER)
   void testFormSubmission() {
     Assertions.assertTrue(mainPage.fillUpPayForm("297777777", "100", "ivan@gmail.com").isEnabled(), "Платёжный шлюз не появился.");
   }
 
   @Test
   @DisplayName("Корректность отображения суммы на форме с данными карты (хэдер)")
+  @Epic("Онлайн пополнение")
+  @Issue("ONREPL-19")
+  @Severity(BLOCKER)
   void checkCorrectnessSumTotalHeader() {
     String sumTotalExpected = "101.5";
     driver.switchTo().frame(mainPage.fillUpPayForm("297777777", sumTotalExpected, "ivan@gmail.com"));
@@ -147,6 +178,9 @@ class ChromeTest {
 
   @Test
   @DisplayName("Корректность отображения суммы на форме с данными карты (кнопка)")
+  @Epic("Онлайн пополнение")
+  @Issue("ONREPL-20")
+  @Severity(BLOCKER)
   void checkCorrectnessSumTotalButton() {
     String sumTotalExpected = "101.5";
     driver.switchTo().frame(mainPage.fillUpPayForm("297777777", sumTotalExpected, "ivan@gmail.com"));
@@ -156,6 +190,9 @@ class ChromeTest {
 
   @Test
   @DisplayName("Корректность отображения номера телефона на форме с данными карты")
+  @Epic("Онлайн пополнение")
+  @Issue("ONREPL-21")
+  @Severity(CRITICAL)
   void checkCorrectnessPhoneNumber() {
     String phoneNumberExpected = "297777777";
     driver.switchTo().frame(mainPage.fillUpPayForm(phoneNumberExpected, "123.4","ivan@gmail.com"));
@@ -165,6 +202,9 @@ class ChromeTest {
 
   @Test
   @DisplayName("Проверка плейсхолдеров в форме c данными карты")
+  @Epic("Онлайн пополнение")
+  @Issue("ONREPL-22")
+  @Severity(MINOR)
   void checkPlaceholdersCardDetailsForm() {
     driver.switchTo().frame(mainPage.fillUpPayForm("297777777", "123.4","ivan@gmail.com"));
 
@@ -178,6 +218,9 @@ class ChromeTest {
 
   @Test
   @DisplayName("Наличие логотипов платёжных систем (форма с данными карты)")
+  @Epic("Онлайн пополнение")
+  @Issue("ONREPL-23")
+  @Severity(TRIVIAL)
   void checkPresenceCardDetailsLogo() {
     driver.switchTo().frame(mainPage.fillUpPayForm("297777777", "123.4","ivan@gmail.com"));
 
